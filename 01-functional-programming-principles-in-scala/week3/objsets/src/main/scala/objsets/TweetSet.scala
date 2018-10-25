@@ -149,13 +149,14 @@ class NonEmpty(elem: Tweet, left: TweetSet, right: TweetSet) extends TweetSet {
     }
 
     def mostRetweeted: Tweet = {
-      val l: Tweet = Try(left.mostRetweeted) getOrElse null
-      val r: Tweet = Try(right.mostRetweeted) getOrElse null
-      if (l==null || elem.retweets > l.retweets)
-        if (r ==null || elem.retweets > r.retweets) elem
-        else r
-      else if (r == null|| l.retweets > r.retweets) l
-      else r
+      val tryL = Try(left.mostRetweeted)
+      val tryR = Try(right.mostRetweeted)
+
+      if (tryL.isFailure || elem.retweets > tryL.get.retweets)
+        if (tryR.isFailure || elem.retweets > tryR.get.retweets) elem
+        else tryR.get
+      else if (tryR.isFailure || tryL.get.retweets > tryR.get.retweets) tryL.get
+      else tryR.get
     }
 
 
